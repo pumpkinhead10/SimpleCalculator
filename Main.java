@@ -29,20 +29,22 @@ class CalculatorUI extends JFrame {
 
     private void evaluate() {
         String numbers = screen.getText();
-        int result = 0;
-        int currentNumber = 0;
-        int lastNumber = 0;  // This stores the result of the last multiplication or division
+        double result = 0;
+        double currentNumber = 0;
+        StringBuilder numberBuilder = new StringBuilder();
+        double lastNumber = 0;  // This stores the result of the last multiplication or division
         char operation = '+';  // Start with '+' to add the first number
 
         for (int i = 0; i < numbers.length(); i++) {
             char c = numbers.charAt(i);
 
-            if (Character.isDigit(c)) {
-                currentNumber = currentNumber * 10 + (c - '0');
-            }
+            if(Character.isDigit(c) || c == '.')
+                numberBuilder.append(c);
 
             // If the character is an operator, or it's the last character in the string
-            if (!Character.isDigit(c) && c != ' ' || i == numbers.length() - 1) {
+            if (!Character.isDigit(c) && c != '.' && c != ' ' || i == numbers.length() - 1) {
+
+                currentNumber = Double.parseDouble(numberBuilder.toString());
                 switch (operation) {
                     case('+'): {
                         result += lastNumber;
@@ -51,7 +53,7 @@ class CalculatorUI extends JFrame {
                     }
 
                     case('-'): {
-                        result += lastNumber;
+                        result = lastNumber;
                         lastNumber = -currentNumber;
                         break;
                     }
@@ -75,6 +77,7 @@ class CalculatorUI extends JFrame {
                         break;
                     }
                 }
+                numberBuilder.setLength(0); // Reset number builder
                 operation = c;  // Update the operation to the current operator
                 currentNumber = 0;  // Reset the current number
             }
@@ -82,7 +85,6 @@ class CalculatorUI extends JFrame {
 
         // Add the last number to the result
         result += lastNumber;
-
         // check if number have decimal pr not
         String formattedResult = (result % 1 == 0) ? String.format("%d", (int) result) : String.format("%.2f", result);
 
@@ -224,6 +226,7 @@ class CalculatorUI extends JFrame {
             btn.setFont(buttonFont);
             btn.setBackground(Color.black);
             btn.setForeground(Color.gray);
+            btn.setFocusPainted(false);
             btn.addActionListener(e -> {
                 if ("C".equals(btn.getText())) {
                     screen.setText(""); // Clear the text field
